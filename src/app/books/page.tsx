@@ -2,8 +2,14 @@
 
 import { useEffect, useState, useRef } from "react";
 
+type Book = {
+  id: string | number;
+  title: string;
+  author: string;
+};
+
 export default function Books() {
-  const [books, setBooks] = useState([]);
+  const [books, setBooks] = useState<Book[]>([]);
   const genreInput = useRef<HTMLSelectElement>(null);
 
   useEffect(() => {
