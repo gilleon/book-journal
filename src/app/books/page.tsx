@@ -4,7 +4,7 @@ import { useEffect, useState, useRef } from "react";
 
 export default function Books() {
   const [books, setBooks] = useState([]);
-  const genreInput = useRef();
+  const genreInput = useRef(null);
 
   useEffect(() => {
     fetch(
