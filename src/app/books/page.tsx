@@ -4,7 +4,7 @@ import { useEffect, useState, useRef } from "react";
 
 export default function Books() {
   const [books, setBooks] = useState([]);
-  const genreInput = useRef(null);
+  const genreInput = useRef<HTMLSelectElement>(null);
 
   useEffect(() => {
     fetch(
@@ -15,7 +15,7 @@ export default function Books() {
   }, []);
 
   const handleSearch = () => {
-    const genre = genreInput.current.value;
+    const genre = genreInput.current!.value;
     fetch(
       `https://sd-6310-2025-summer-express-app.onrender.com/api/books/recommendations?genre=${genre}`
     )
