@@ -15,7 +15,7 @@ export default function Books() {
   }, []);
 
   const handleSearch = () => {
-    const genre = genreInput.current!.value;
+    const genre = genreInput.current?.value || "classic";
     fetch(
       `https://sd-6310-2025-summer-express-app.onrender.com/api/books/recommendations?genre=${genre}`
     )
