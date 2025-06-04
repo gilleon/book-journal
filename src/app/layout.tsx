@@ -2,16 +2,7 @@ import Image from "next/image";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+import Link from 'next/link';
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -46,9 +37,9 @@ export default function RootLayout({
                   <Image src="/images/logo.png" alt="Pleria Logo" width={118} height={32} />
                 </div>
                 <ul className="nav-links">
-                  <li><a href="/">Home</a></li>
-                  <li><a href="/books">Books</a></li>
-                  <li><a href="/about">About</a></li>
+                  <li><Link href="/">Home</Link></li>
+                  <li><Link href="/books">Books</Link></li>
+                  <li><Link href="/about">About</Link></li>
                 </ul>
               </div>
             </nav>
