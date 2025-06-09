@@ -18,7 +18,7 @@ export default function RootLayout({
       <head>
         <meta charSet="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Plant Care Reminder App</title>
+        <title>Book Journal</title>
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=frame_inspect" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
@@ -38,6 +38,7 @@ export default function RootLayout({
                 <ul className="nav-links">
                   <li><Link href="/">Home</Link></li>
                   <li><Link href="/books">Books</Link></li>
+                  <li><Link href="/readers">Readers</Link></li>
                   <li><Link href="/about">About</Link></li>
                 </ul>
               </div>

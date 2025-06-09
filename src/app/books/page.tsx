@@ -20,6 +20,7 @@ export default function BooksPage() {
   });
   const [editingId, setEditingId] = useState<number | null>(null);
   const [showModal, setShowModal] = useState(false);
+  const [filterGenre, setFilterGenre] = useState('');
 
   const api = 'https://sd-6310-2025-summer-express-app.onrender.com/api/books';
 
@@ -151,6 +152,24 @@ export default function BooksPage() {
           </div>
         )}
 
+        <div className="mb-4">
+          <label className="mr-2 font-medium text-left">Filter by Genre:</label>
+          <select
+            value={filterGenre}
+            onChange={(e) => setFilterGenre(e.target.value)}
+            className="border p-2 mr-2 text-black"
+          >
+            <option value="">All</option>
+            {[...new Set(books.map((book) => book.genre))].map(
+              (genre, index) => (
+                <option key={index} value={genre}>
+                  {genre}
+                </option>
+              )
+            )}
+          </select>
+        </div>
+
         <table className="w-full border-collapse border border-gray-200 text-sm">
           <thead className="bg-gray-100">
             <tr>
@@ -162,31 +181,33 @@ export default function BooksPage() {
             </tr>
           </thead>
           <tbody>
-            {books.map((book) => (
-              <tr key={book.id}>
-                <td className="border px-4 py-2">{book.title}</td>
-                <td className="border px-4 py-2">{book.author}</td>
-                <td className="border px-4 py-2">{book.genre}</td>
-                <td className="border px-4 py-2">{book.published_year}</td>
-                <td className="border px-4 py-2 space-x-2">
-                  <button
-                    onClick={() => {
-                      handleEdit(book);
-                      setShowModal(true);
-                    }}
-                    className="text-blue-600"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDelete(book.id)}
-                    className="text-red-600"
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
+            {books
+              .filter((book) => !filterGenre || book.genre === filterGenre)
+              .map((book) => (
+                <tr key={book.id}>
+                  <td className="border px-4 py-2">{book.title}</td>
+                  <td className="border px-4 py-2">{book.author}</td>
+                  <td className="border px-4 py-2">{book.genre}</td>
+                  <td className="border px-4 py-2">{book.published_year}</td>
+                  <td className="border px-4 py-2 space-x-2">
+                    <button
+                      onClick={() => {
+                        handleEdit(book);
+                        setShowModal(true);
+                      }}
+                      className="text-blue-600"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDelete(book.id)}
+                      className="text-red-600"
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))}
           </tbody>
         </table>
       </div>

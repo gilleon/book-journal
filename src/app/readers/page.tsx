@@ -14,7 +14,8 @@ export default function ReadersPage() {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [showModal, setShowModal] = useState(false);
 
-  const api = "http://localhost:3000/api/readers";
+  const api =
+    "https://sd-6310-2025-summer-express-app.onrender.com/api/readers";
 
   const fetchReaders = () => {
     fetch(api)
