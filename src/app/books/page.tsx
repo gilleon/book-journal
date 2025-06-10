@@ -21,6 +21,7 @@ export default function BooksPage() {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [filterGenre, setFilterGenre] = useState('');
+  const [updateMethod, setUpdateMethod] = useState<'PUT' | 'PATCH'>('PUT');
 
   const api = 'https://sd-6310-2025-summer-express-app.onrender.com/api/books';
 
@@ -40,7 +41,7 @@ export default function BooksPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const method = editingId ? 'PUT' : 'POST';
+    const method = editingId ? updateMethod : 'POST';
     const endpoint = editingId ? `${api}/${editingId}` : api;
 
     const res = await fetch(endpoint, {
@@ -54,6 +55,7 @@ export default function BooksPage() {
       setFormData({ title: '', author: '', genre: '', published_year: '' });
       setEditingId(null);
       setShowModal(false);
+      setUpdateMethod('PUT');
     }
   };
 
@@ -65,6 +67,7 @@ export default function BooksPage() {
       genre: book.genre,
       published_year: book.published_year.toString()
     });
+    setUpdateMethod('PUT');
   };
 
   const handleDelete = async (id: number) => {
@@ -123,6 +126,30 @@ export default function BooksPage() {
                   className="border p-2"
                   required
                 />
+                {editingId && (
+                  <div className="sm:col-span-2 flex items-center gap-4">
+                    <label>
+                      <input
+                        type="radio"
+                        name="updateMethod"
+                        value="PUT"
+                        checked={updateMethod === "PUT"}
+                        onChange={() => setUpdateMethod("PUT")}
+                      />{" "}
+                      Full Update (PUT)
+                    </label>
+                    <label>
+                      <input
+                        type="radio"
+                        name="updateMethod"
+                        value="PATCH"
+                        checked={updateMethod === "PATCH"}
+                        onChange={() => setUpdateMethod("PATCH")}
+                      />{" "}
+                      Partial Update (PATCH)
+                    </label>
+                  </div>
+                )}
                 <div className="sm:col-span-2 flex justify-end space-x-2">
                   <button
                     type="submit"
@@ -141,6 +168,7 @@ export default function BooksPage() {
                       });
                       setEditingId(null);
                       setShowModal(false);
+                      setUpdateMethod('PUT');
                     }}
                     className="bg-gray-300 text-black px-4 py-2 rounded"
                   >
