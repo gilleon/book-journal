@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import ModalForm from "@/components/ModalForm";
+import DataTable from "@/components/DataTable";
 
 type Reader = {
   id: number;
@@ -77,86 +79,59 @@ export default function ReadersPage() {
           ➕ Add New Reader
         </button>
 
-        {showModal && (
-          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-            <div className="bg-white p-6 rounded-md w-full max-w-lg">
-              <h2 className="text-xl font-semibold mb-4">
-                {editingId ? "Edit Reader" : "Add Reader"}
-              </h2>
-              <form onSubmit={handleSubmit} className="grid gap-4">
-                <input
-                  type="text"
-                  name="name"
-                  placeholder="Name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  className="border p-2"
-                  required
-                />
-                <input
-                  type="email"
-                  name="email"
-                  placeholder="Email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  className="border p-2"
-                  required
-                />
-                <div className="flex justify-end space-x-2">
-                  <button
-                    type="submit"
-                    className="bg-green-800 text-white px-4 py-2 rounded"
-                  >
-                    {editingId ? "Update" : "Add"}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setFormData({ name: "", email: "" });
-                      setEditingId(null);
-                      setShowModal(false);
-                    }}
-                    className="bg-gray-300 text-black px-4 py-2 rounded"
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        )}
+        <ModalForm
+          title={editingId ? "Edit Reader" : "Add Reader"}
+          show={showModal}
+          onClose={() => {
+            setFormData({ name: "", email: "" });
+            setEditingId(null);
+            setShowModal(false);
+          }}
+          onSubmit={handleSubmit}
+        >
+          <input
+            type="text"
+            name="name"
+            placeholder="Name"
+            value={formData.name}
+            onChange={handleChange}
+            className="border p-2"
+            required
+          />
+          <input
+            type="email"
+            name="email"
+            placeholder="Email"
+            value={formData.email}
+            onChange={handleChange}
+            className="border p-2"
+            required
+          />
+        </ModalForm>
 
-        <table className="w-full border-collapse border border-gray-200 text-sm">
-          <thead className="bg-gray-100">
-            <tr>
-              <th className="border px-4 py-2">Name</th>
-              <th className="border px-4 py-2">Email</th>
-              <th className="border px-4 py-2">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {readers.map((reader) => (
-              <tr key={reader.id}>
-                <td className="border px-4 py-2">{reader.name}</td>
-                <td className="border px-4 py-2">{reader.email}</td>
-                <td className="border px-4 py-2 space-x-2">
-                  <button
-                    onClick={() => handleEdit(reader)}
-                    className="text-blue-600"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDelete(reader.id)}
-                    className="text-red-600"
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <DataTable
+          data={readers}
+          columns={[
+            { header: "Name", accessor: "name" },
+            { header: "Email", accessor: "email" },
+          ]}
+          actions={(reader) => (
+            <>
+              <button
+                onClick={() => handleEdit(reader)}
+                className="text-blue-600"
+              >
+                Edit
+              </button>
+              <button
+                onClick={() => handleDelete(reader.id)}
+                className="text-red-600 ml-2"
+              >
+                Delete
+              </button>
+            </>
+          )}
+        />
       </div>
     </>
   );
