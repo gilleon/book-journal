@@ -8,6 +8,7 @@ interface ModalFormProps {
   onClose: () => void;
   onSubmit: (e: React.FormEvent) => void;
   children: React.ReactNode;
+  confirmOnly?: boolean;
 }
 
 export default function ModalForm({
@@ -16,6 +17,7 @@ export default function ModalForm({
   onClose,
   onSubmit,
   children,
+  confirmOnly = false,
 }: ModalFormProps) {
   if (!show) return null;
 
@@ -26,19 +28,40 @@ export default function ModalForm({
         <form onSubmit={onSubmit} className="grid gap-4">
           {children}
           <div className="flex justify-end space-x-2">
-            <button
-              type="submit"
-              className="bg-green-800 text-white px-4 py-2 rounded"
-            >
-              Submit
-            </button>
-            <button
-              type="button"
-              onClick={onClose}
-              className="bg-gray-300 text-black px-4 py-2 rounded"
-            >
-              Cancel
-            </button>
+            {confirmOnly ? (
+              <>
+                <button
+                  type="button"
+                  onClick={onSubmit as () => void}
+                  className="bg-red-600 text-white px-4 py-2 rounded"
+                >
+                  Confirm
+                </button>
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="bg-gray-300 text-black px-4 py-2 rounded"
+                >
+                  Cancel
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  type="submit"
+                  className="bg-green-800 text-white px-4 py-2 rounded"
+                >
+                  Submit
+                </button>
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="bg-gray-300 text-black px-4 py-2 rounded"
+                >
+                  Cancel
+                </button>
+              </>
+            )}
           </div>
         </form>
       </div>
