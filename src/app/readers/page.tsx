@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import ModalForm from "@/components/ModalForm";
-import DataTable from "@/components/DataTable";
+import ModalForm from "../../components/ModalForm";
+import DataTable from "../../components/DataTable";
 
 type Reader = {
   id: number;
@@ -15,6 +15,8 @@ export default function ReadersPage() {
   const [formData, setFormData] = useState({ name: "", email: "" });
   const [editingId, setEditingId] = useState<number | null>(null);
   const [showModal, setShowModal] = useState(false);
+  // State for delete confirmation modal
+  const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null);
 
   const api =
     "https://sd-6310-2025-summer-express-app.onrender.com/api/readers";
@@ -124,7 +126,7 @@ export default function ReadersPage() {
                 Edit
               </button>
               <button
-                onClick={() => handleDelete(reader.id)}
+                onClick={() => setConfirmDeleteId(reader.id)}
                 className="text-red-600 ml-2"
               >
                 Delete
@@ -132,6 +134,19 @@ export default function ReadersPage() {
             </>
           )}
         />
+        {/* Delete confirmation modal */}
+        <ModalForm
+          title="Confirm Delete"
+          show={confirmDeleteId !== null}
+          onClose={() => setConfirmDeleteId(null)}
+          onSubmit={() => {
+            if (confirmDeleteId !== null) handleDelete(confirmDeleteId);
+            setConfirmDeleteId(null);
+          }}
+          confirmOnly
+        >
+          <p>Are you sure you want to delete this reader?</p>
+        </ModalForm>
       </div>
     </>
   );

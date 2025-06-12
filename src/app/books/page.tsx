@@ -25,8 +25,10 @@ export default function BooksPage() {
   const [showModal, setShowModal] = useState(false);
   const [filterGenre, setFilterGenre] = useState('');
   const [updateMethod, setUpdateMethod] = useState<'PUT' | 'PATCH'>('PUT');
+  // State for delete confirmation modal
+  const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null);
 
-  const api = 'https://sd-6310-2025-summer-express-app.onrender.com/api/books';
+  const api = "https://sd-6310-2025-summer-express-app.onrender.com/api/books";
 
   const fetchBooks = () => {
     fetch(api)
@@ -183,7 +185,7 @@ export default function BooksPage() {
                 Edit
               </button>
               <button
-                onClick={() => handleDelete(book.id)}
+                onClick={() => setConfirmDeleteId(book.id)}
                 className="text-red-600 ml-2"
               >
                 Delete
@@ -191,6 +193,19 @@ export default function BooksPage() {
             </>
           )}
         />
+        {/* Delete confirmation modal */}
+        <ModalForm
+          title="Confirm Delete"
+          show={confirmDeleteId !== null}
+          onClose={() => setConfirmDeleteId(null)}
+          onSubmit={() => {
+            if (confirmDeleteId !== null) handleDelete(confirmDeleteId);
+            setConfirmDeleteId(null);
+          }}
+          confirmOnly
+        >
+          <p>Are you sure you want to delete this book?</p>
+        </ModalForm>
       </div>
       <button
         onClick={() => setShowModal(true)}
