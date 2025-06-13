@@ -18,15 +18,28 @@ export default function ReaderInitModal() {
     e.preventDefault();
     if (!readerName.trim()) return;
     try {
-      const res = await fetch("http://localhost:3000/api/readers", {
+      const getRes = await fetch(`http://localhost:3000/api/readers?email=${encodeURIComponent(readerEmail)}`);
+      if (getRes.ok) {
+        const existingReader = await getRes.json();
+        const isEmpty =
+          (Array.isArray(existingReader) && existingReader.length === 0) ||
+          (existingReader && Object.keys(existingReader).length === 0);
+
+        if (!isEmpty) {
+          localStorage.setItem("reader", JSON.stringify(existingReader));
+          setShowModal(false);
+          return;
+        }
+      }
+      const postRes = await fetch("http://localhost:3000/api/readers", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ name: readerName, email: readerEmail }),
       });
-      if (res.ok) {
-        const newReader = await res.json();
+      if (postRes.ok) {
+        const newReader = await postRes.json();
         localStorage.setItem("reader", JSON.stringify(newReader));
         setShowModal(false);
       } else {
@@ -71,4 +84,3 @@ export default function ReaderInitModal() {
     </div>
   );
 }
-
