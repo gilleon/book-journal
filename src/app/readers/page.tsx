@@ -18,8 +18,7 @@ export default function ReadersPage() {
   // State for delete confirmation modal
   const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null);
 
-  const api =
-    "https://sd-6310-2025-summer-express-app.onrender.com/api/readers";
+  const api = "http://localhost:3000/api/readers";
 
   const fetchReaders = () => {
     fetch(api)
