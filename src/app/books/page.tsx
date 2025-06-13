@@ -29,7 +29,7 @@ export default function BooksPage() {
   // State for delete confirmation modal
   const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null);
 
-  const api = `${API_BASE_URL}/api/books`;
+  const api = `${API_BASE_URL}/books`;
 
   const fetchBooks = () => {
     fetch(api)

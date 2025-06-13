@@ -2,6 +2,8 @@ import Image from "next/image";
 import type { Metadata } from "next";
 import "./globals.css";
 import Link from 'next/link';
+import ReaderInitModal from "../components/ReaderInitModal";
+import LogoutButton from "../components/LogoutButton";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -40,10 +42,12 @@ export default function RootLayout({
                   <li><Link href="/books">Books</Link></li>
                   <li><Link href="/readers">Readers</Link></li>
                   <li><Link href="/about">About</Link></li>
+                  <li><LogoutButton /></li>
                 </ul>
               </div>
             </nav>
             {children}
+            <ReaderInitModal />
           </div>
         </div>
       </body>

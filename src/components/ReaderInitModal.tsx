@@ -54,7 +54,7 @@ export default function ReaderInitModal() {
   if (!showModal) return null;
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-80 z-50">
       <div className="bg-white p-6 rounded-md w-full max-w-md shadow-lg">
         <h2 className="text-lg font-semibold mb-4">Who’s using this device?</h2>
         <form onSubmit={handleSubmit}>
