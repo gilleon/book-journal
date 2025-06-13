@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { API_BASE_URL } from "../lib/api";
 
 export default function ReaderInitModal() {
   const [showModal, setShowModal] = useState(false);
@@ -18,7 +19,7 @@ export default function ReaderInitModal() {
     e.preventDefault();
     if (!readerName.trim()) return;
     try {
-      const getRes = await fetch(`http://localhost:3000/api/readers?email=${encodeURIComponent(readerEmail)}`);
+      const getRes = await fetch(`${API_BASE_URL}/readers?email=${encodeURIComponent(readerEmail)}`);
       if (getRes.ok) {
         const existingReader = await getRes.json();
         const isEmpty =
@@ -31,7 +32,7 @@ export default function ReaderInitModal() {
           return;
         }
       }
-      const postRes = await fetch("http://localhost:3000/api/readers", {
+      const postRes = await fetch(`${API_BASE_URL}/readers`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

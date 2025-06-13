@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import ModalForm from "../../components/ModalForm";
 import DataTable from "../../components/DataTable";
+import { API_BASE_URL } from "../../lib/api";
 
 type Reader = {
   id: number;
@@ -18,7 +19,7 @@ export default function ReadersPage() {
   // State for delete confirmation modal
   const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null);
 
-  const api = "http://localhost:3000/api/readers";
+  const api = `${API_BASE_URL}/readers`;
 
   const fetchReaders = () => {
     fetch(api)

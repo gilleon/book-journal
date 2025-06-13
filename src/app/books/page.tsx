@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import ModalForm from "../../components/ModalForm";
 import DataTable from "../../components/DataTable";
 import FilterDropdown from "../../components/FilterDropdown";
+import { API_BASE_URL } from "../../lib/api";
 
 type Book = {
   id: number;
@@ -28,7 +29,7 @@ export default function BooksPage() {
   // State for delete confirmation modal
   const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null);
 
-  const api = "https://sd-6310-2025-summer-express-app.onrender.com/api/books";
+  const api = `${API_BASE_URL}/api/books`;
 
   const fetchBooks = () => {
     fetch(api)
