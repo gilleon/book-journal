@@ -1,7 +1,30 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { API_BASE_URL } from "@/lib/api";
+
+interface Review {
+  id: number;
+  reader_id: number;
+  book_id: number;
+  reading_status: string;
+  rating?: number;
+  emoji?: string;
+  comment?: string;
+  reader_name?: string;
+  name?: string;
+}
+
+interface Reaction {
+  id: number;
+  reader_id: number;
+  book_id: number;
+  name: string;
+  reading_status: string;
+  emoji: string;
+  rating: number;
+  comment: string;
+}
 
 interface BookDetailsModalProps {
   book: {
@@ -17,67 +40,77 @@ interface BookDetailsModalProps {
 }
 
 export default function BookDetailsModal({ book, readerId, onClose, show }: BookDetailsModalProps) {
-  const [review, setReview] = useState<any>(null);
+  const [review, setReview] = useState<Review | null>(null);
   const [rating, setRating] = useState<number>(5);
   const [emoji, setEmoji] = useState<string>("");
   const [comment, setComment] = useState<string>("");
   const [startFeedback, setStartFeedback] = useState<string>("");
   const [finishFeedback, setFinishFeedback] = useState<string>("");
-  const [reactions, setReactions] = useState<any[]>([]);
+  const [reactions, setReactions] = useState<Reaction[]>([]);
 
-  const fetchReview = () => {
+  const fetchReview = useCallback(() => {
     fetch(`${API_BASE_URL}/reviews/readers/${readerId}/books/${book.id}`)
       .then((res) => res.json())
-      .then(setReview);
-  };
+      .then((data: Review) => setReview(data))
+      .catch((error) => console.error("Error fetching review:", error));
+  }, [readerId, book.id]);
 
-  const fetchReactions = () => {
+  const fetchReactions = useCallback(() => {
     fetch(`${API_BASE_URL}/reviews/books/${book.id}/reactions`)
       .then((res) => res.json())
-      .then(setReactions);
-  };
+      .then((data: Reaction[]) => setReactions(data))
+      .catch((error) => console.error("Error fetching reactions:", error));
+  }, [book.id]);
 
   useEffect(() => {
     if (show) {
       fetchReview();
       fetchReactions();
     }
-  }, [show, book.id, readerId]);
+  }, [show, fetchReview, fetchReactions]);
 
   const handleStartReading = async () => {
-    await fetch(`${API_BASE_URL}/reviews/start-reading`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ readerId: readerId, bookId: book.id })
-    });
-    fetchReview();
-    setReview((prevReview: any) => ({
-      ...prevReview,
-      reading_status: "In Progress"
-    }));
-    setStartFeedback("Status updated to In Progress");
-    setFinishFeedback("");
+    try {
+      await fetch(`${API_BASE_URL}/reviews/start-reading`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ readerId: readerId, bookId: book.id })
+      });
+      fetchReview();
+      setReview((prevReview: Review | null) => ({
+        ...prevReview,
+        reading_status: "In Progress"
+      } as Review));
+      setStartFeedback("Status updated to In Progress");
+      setFinishFeedback("");
+    } catch (error) {
+      console.error("Error starting reading:", error);
+    }
   };
 
   const handleFinishReading = async () => {
-    await fetch(`${API_BASE_URL}/reviews/finish-reading`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        readerId: readerId,
-        bookId: book.id,
-        rating: rating,
-        emoji: emoji,
-        comment: comment
-      })
-    });
-    fetchReview();
-    setReview((prevReview: any) => ({
-      ...prevReview,
-      reading_status: "Finished"
-    }));
-    setFinishFeedback("Status updated to Finished");
-    setStartFeedback("");
+    try {
+      await fetch(`${API_BASE_URL}/reviews/finish-reading`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          readerId: readerId,
+          bookId: book.id,
+          rating: rating,
+          emoji: emoji,
+          comment: comment
+        })
+      });
+      fetchReview();
+      setReview((prevReview: Review | null) => ({
+        ...prevReview,
+        reading_status: "Finished"
+      } as Review));
+      setFinishFeedback("Status updated to Finished");
+      setStartFeedback("");
+    } catch (error) {
+      console.error("Error finishing reading:", error);
+    }
   };
 
   if (!show) return null;
@@ -97,7 +130,7 @@ export default function BookDetailsModal({ book, readerId, onClose, show }: Book
           onClick={handleStartReading}
           className="bg-blue-600 text-white px-4 py-2 rounded mb-1"
         >
-          I’m Reading This
+          I&apos;m Reading This
         </button>
         {startFeedback && <p className="text-sm text-green-700 mb-2">{startFeedback}</p>}
 
