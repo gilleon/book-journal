@@ -1,14 +1,20 @@
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
+interface Book {
+  id: number;
+  title: string;
+  author: string;
+}
+
 async function BooksServerComponent() {
   const response = await fetch('/api/books');
-  const books = await response.json();
+  const books: Book[] = await response.json();
   
   return (
     <div>
       <h1>Books</h1>
-      {books.map((book: any) => (
+      {books.map((book: Book) => (
         <div key={book.id} data-testid={`book-${book.id}`}>
           <h2>{book.title}</h2>
           <p>{book.author}</p>
