@@ -5,6 +5,7 @@ import ModalForm from "../../components/ModalForm";
 import DataTable from "../../components/DataTable";
 import FilterDropdown from "../../components/FilterDropdown";
 import { API_BASE_URL } from "../../lib/api";
+import BookDetailsModal from "../../components/BookDetailsModal";
 
 type Book = {
   id: number;
@@ -28,6 +29,11 @@ export default function BooksPage() {
   const [updateMethod, setUpdateMethod] = useState<'PUT' | 'PATCH'>('PUT');
   // State for delete confirmation modal
   const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null);
+  // State for book details modal
+  const [selectedBook, setSelectedBook] = useState<Book | null>(null);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
+  // State for readerId
+  const [readerId, setReaderId] = useState<number | null>(null);
 
   const api = `${API_BASE_URL}/books`;
 
@@ -38,6 +44,23 @@ export default function BooksPage() {
   };
 
   useEffect(() => {
+    const storedReader = localStorage.getItem("reader");
+    console.log("Raw localStorage value:", storedReader);
+    
+    if (storedReader) {
+      const parsed = JSON.parse(storedReader);
+      console.log("Parsed reader object:", parsed);
+      
+      // Now it should be a single reader object with an id property
+      if (parsed && parsed.id) {
+        setReaderId(parsed.id);
+        console.log("Reader ID from localStorage:", parsed.id);
+      } else {
+        console.log("No valid reader ID found");
+      }
+    } else {
+      console.log("No reader found in localStorage");
+    }
     fetchBooks();
   }, []);
 
@@ -65,7 +88,8 @@ export default function BooksPage() {
     }
   };
 
-  const handleEdit = (book: Book) => {
+  const handleEdit = (e: React.MouseEvent, book: Book) => {
+    e.stopPropagation(); // Prevent event bubbling
     setEditingId(book.id);
     setFormData({
       title: book.title,
@@ -74,6 +98,11 @@ export default function BooksPage() {
       published_year: book.published_year.toString()
     });
     setUpdateMethod('PUT');
+    setShowModal(true); // Show the edit modal, not the details modal
+    
+    // Ensure details modal is closed
+    setShowDetailsModal(false);
+    setSelectedBook(null);
   };
 
   const handleDelete = async (id: number) => {
@@ -189,30 +218,41 @@ export default function BooksPage() {
         <DataTable
           data={books.filter((book) => !filterGenre || book.genre === filterGenre)}
           columns={[
-            { header: "Title", accessor: "title" },
+            {
+              header: "Title",
+              accessor: "title",
+            },
             { header: "Author", accessor: "author" },
             { header: "Genre", accessor: "genre" },
             { header: "Year", accessor: "published_year" },
           ]}
           actions={(book) => (
             <>
-              <button
-                onClick={() => {
-                  handleEdit(book);
-                  setShowModal(true);
+              <button 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleEdit(e, book);
                 }}
-                className="text-blue-600"
+                className="bg-blue-500 text-white px-2 py-1 rounded mr-2"
               >
                 Edit
               </button>
-              <button
-                onClick={() => setConfirmDeleteId(book.id)}
-                className="text-red-600 ml-2"
+
+              <button 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleDelete(book.id);
+                }}
+                className="bg-red-500 text-white px-2 py-1 rounded"
               >
                 Delete
               </button>
             </>
           )}
+          onRowClick={(book) => {
+            setSelectedBook(book);
+            setShowDetailsModal(true);
+          }}
         />
         {/* Delete confirmation modal */}
         <ModalForm
@@ -234,6 +274,18 @@ export default function BooksPage() {
       >
         ➕ Add New Book
       </button>
+      {/* Book Details Modal */}
+      {showDetailsModal && selectedBook && readerId !== null && (
+        <BookDetailsModal
+          book={selectedBook}
+          readerId={readerId}
+          show={showDetailsModal}
+          onClose={() => {
+            setShowDetailsModal(false);
+            setSelectedBook(null);
+          }}
+        />
+      )}
     </>
   );
 }
