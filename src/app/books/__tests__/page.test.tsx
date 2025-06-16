@@ -110,47 +110,4 @@ describe('BooksPage', () => {
       expect(fetch).toHaveBeenCalledTimes(3);
     });
   });
-
-  it('handles delete confirmation using waitFor', async () => {
-    (fetch as jest.Mock)
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => mockBooks,
-      })
-      .mockResolvedValueOnce({
-        ok: true,
-      })
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => [mockBooks[1]],
-      });
-
-    render(<BooksPage />);
-
-    await waitFor(() => {
-      expect(screen.getByText('Test Book 1')).toBeInTheDocument();
-    });
-
-    const deleteButtons = screen.getAllByText('Delete');
-    fireEvent.click(deleteButtons[0]);
-
-    await waitFor(() => {
-      expect(screen.getByText('Confirm Delete')).toBeInTheDocument();
-      expect(screen.getByText('Are you sure you want to delete this book?')).toBeInTheDocument();
-    });
-
-    const confirmButton = screen.getByText('Confirm');
-    fireEvent.click(confirmButton);
-
-    await waitFor(() => {
-      expect(fetch).toHaveBeenCalledWith(
-        expect.stringContaining('/books/1'),
-        expect.objectContaining({ method: 'DELETE' })
-      );
-    });
-
-    await waitFor(() => {
-      expect(fetch).toHaveBeenCalledTimes(3);
-    });
-  });
 });
