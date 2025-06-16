@@ -97,42 +97,62 @@ export default function BooksPage() {
           }}
           onSubmit={handleSubmit}
         >
-          <input
-            type="text"
-            name="title"
-            placeholder="Title"
-            value={formData.title}
-            onChange={handleChange}
-            className="border p-2"
-            required
-          />
-          <input
-            type="text"
-            name="author"
-            placeholder="Author"
-            value={formData.author}
-            onChange={handleChange}
-            className="border p-2"
-            required
-          />
-          <input
-            type="text"
-            name="genre"
-            placeholder="Genre"
-            value={formData.genre}
-            onChange={handleChange}
-            className="border p-2"
-            required
-          />
-          <input
-            type="number"
-            name="published_year"
-            placeholder="Year"
-            value={formData.published_year}
-            onChange={handleChange}
-            className="border p-2"
-            required
-          />
+          <label htmlFor="title">
+            Title:
+            <input
+              id="title"
+              type="text"
+              name="title"
+              placeholder="Title"
+              value={formData.title}
+              onChange={handleChange}
+              className="border p-2"
+              required
+            />
+          </label>
+          
+          <label htmlFor="author">
+            Author:
+            <input
+              id="author"
+              type="text"
+              name="author"
+              placeholder="Author"
+              value={formData.author}
+              onChange={handleChange}
+              className="border p-2"
+              required
+            />
+          </label>
+          
+          <label htmlFor="genre">
+            Genre:
+            <input
+              id="genre"
+              type="text"
+              name="genre"
+              placeholder="Genre"
+              value={formData.genre}
+              onChange={handleChange}
+              className="border p-2"
+              required
+            />
+          </label>
+          
+          <label htmlFor="published_year">
+            Year:
+            <input
+              id="published_year"
+              type="number"
+              name="published_year"
+              placeholder="Year"
+              value={formData.published_year}
+              onChange={handleChange}
+              className="border p-2"
+              required
+            />
+          </label>
+          
           {editingId && (
             <div className="sm:col-span-2 flex items-center gap-4">
               <label>
