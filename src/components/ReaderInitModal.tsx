@@ -46,7 +46,7 @@ export default function ReaderInitModal() {
       } else {
         alert("Failed to create reader.");
       }
-    } catch (error) {
+    } catch {
       alert("Error creating reader.");
     }
   };
