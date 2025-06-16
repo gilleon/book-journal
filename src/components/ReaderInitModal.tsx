@@ -17,21 +17,37 @@ export default function ReaderInitModal() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!readerName.trim()) return;
+    if (!readerName.trim() || !readerEmail.trim()) return;
+
+    console.log("Attempting to login/create user with:", {
+      name: readerName,
+      email: readerEmail,
+    });
+
     try {
-      const getRes = await fetch(`${API_BASE_URL}/readers?email=${encodeURIComponent(readerEmail)}`);
+      // Check if reader exists by email using the new endpoint
+      const getRes = await fetch(
+        `${API_BASE_URL}/readers/by-email?email=${encodeURIComponent(readerEmail)}`
+      );
+
+      console.log("Reader lookup response status:", getRes.status);
+
       if (getRes.ok) {
         const existingReader = await getRes.json();
-        const isEmpty =
-          (Array.isArray(existingReader) && existingReader.length === 0) ||
-          (existingReader && Object.keys(existingReader).length === 0);
+        console.log("Existing reader found:", existingReader);
 
-        if (!isEmpty) {
-          localStorage.setItem("reader", JSON.stringify(existingReader));
-          setShowModal(false);
-          return;
-        }
+        localStorage.setItem("reader", JSON.stringify(existingReader));
+        console.log("✅ Existing reader logged in:", existingReader);
+        console.log("✅ Stored in localStorage:", JSON.stringify(existingReader));
+        setShowModal(false);
+        return;
+      } else if (getRes.status === 404) {
+        console.log("No existing reader found, creating new user...");
+      } else {
+        throw new Error(`Unexpected response: ${getRes.status}`);
       }
+
+      // If no existing reader found, create a new one
       const postRes = await fetch(`${API_BASE_URL}/readers`, {
         method: "POST",
         headers: {
@@ -39,14 +55,24 @@ export default function ReaderInitModal() {
         },
         body: JSON.stringify({ name: readerName, email: readerEmail }),
       });
+
+      console.log("Create reader response status:", postRes.status);
+
       if (postRes.ok) {
         const newReader = await postRes.json();
         localStorage.setItem("reader", JSON.stringify(newReader));
+        console.log("✅ New reader created and logged in:", newReader);
+        console.log("✅ Stored in localStorage:", JSON.stringify(newReader));
         setShowModal(false);
       } else {
+        console.error(
+          "❌ Failed to create reader, response:",
+          await postRes.text()
+        );
         alert("Failed to create reader.");
       }
-    } catch {
+    } catch (error) {
+      console.error("❌ Error with reader authentication:", error);
       alert("Error creating reader.");
     }
   };
