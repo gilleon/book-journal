@@ -58,7 +58,7 @@ export default function BookReactionsPage() {
               </p>
               {reaction.comment && (
                 <p>
-                  <strong>Comment:</strong> "{reaction.comment}"
+                  <strong>Comment:</strong> &apos;{reaction.comment}&apos;
                 </p>
               )}
             </li>
