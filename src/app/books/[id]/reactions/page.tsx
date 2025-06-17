@@ -1,67 +1,19 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { API_BASE_URL } from "../../../../lib/api"; // Adjusted import path
-
-interface Reaction {
-  name: string;
-  rating: number;
-  emoji: string;
-  comment: string;
-  reading_status: string;
-}
-
-interface Book {
-  id: number;
-  title: string;
-  author: string;
-  genre: string;
-  published_year: number;
-}
+import { useBook, useBookReactions } from "@/hooks/useBookData";
 
 export default function BookReactionsPage() {
   const params = useParams();
   const router = useRouter();
-  const bookId = params.id as string; // Changed from bookId to id
+  const bookId = params.id as string;
   
-  const [reactions, setReactions] = useState<Reaction[]>([]);
-  const [book, setBook] = useState<Book | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        
-        // Fetch book details
-        const bookResponse = await fetch(`${API_BASE_URL}/books/${bookId}`);
-        if (!bookResponse.ok) {
-          throw new Error('Failed to fetch book details');
-        }
-        const bookData = await bookResponse.json();
-        setBook(bookData);
-
-        // Fetch reactions
-        const reactionsResponse = await fetch(`${API_BASE_URL}/reviews/books/${bookId}/reactions`);
-        if (!reactionsResponse.ok) {
-          throw new Error('Failed to fetch reactions');
-        }
-        const reactionsData = await reactionsResponse.json();
-        setReactions(reactionsData);
-        
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'An error occurred');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (bookId) {
-      fetchData();
-    }
-  }, [bookId]);
+  // Use custom hooks
+  const { book, loading: bookLoading, error: bookError } = useBook(bookId);
+  const { reactions, loading: reactionsLoading, error: reactionsError } = useBookReactions(bookId);
+  
+  const loading = bookLoading || reactionsLoading;
+  const error = bookError || reactionsError;
 
   const getStatusBadgeColor = (status: string) => {
     switch (status) {
@@ -158,7 +110,6 @@ export default function BookReactionsPage() {
                 key={index}
                 className="bg-white rounded-lg shadow-md p-6 border border-gray-200"
               >
-                {/* Reader Info */}
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="font-semibold text-lg">{reaction.name}</h3>
                   <span
@@ -170,7 +121,6 @@ export default function BookReactionsPage() {
                   </span>
                 </div>
 
-                {/* Rating and Emoji */}
                 <div className="flex items-center gap-3 mb-4">
                   <div className="flex items-center">
                     {renderStars(reaction.rating)}
@@ -183,7 +133,6 @@ export default function BookReactionsPage() {
                   )}
                 </div>
 
-                {/* Comment */}
                 {reaction.comment && (
                   <div className="bg-gray-50 rounded-lg p-3">
                     <p className="text-gray-700 italic">
