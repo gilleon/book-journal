@@ -241,7 +241,7 @@ export default function BooksPage() {
               <button 
                 onClick={(e) => {
                   e.stopPropagation();
-                  handleDelete(book.id);
+                  setConfirmDeleteId(book.id);
                 }}
                 className="bg-red-500 text-white px-2 py-1 rounded"
               >
