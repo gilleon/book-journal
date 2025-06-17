@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { API_BASE_URL } from "../lib/api";
 import ModalForm from "./ModalForm";
+import { useRouter } from "next/navigation";
 
 interface Review {
   id: number;
@@ -41,6 +42,7 @@ interface BookDetailsModalProps {
 }
 
 export default function BookDetailsModal({ book, readerId, onClose, show }: BookDetailsModalProps) {
+  const router = useRouter();
   const [review, setReview] = useState<Review | null>(null);
   const [rating, setRating] = useState<number>(5);
   const [emoji, setEmoji] = useState<string>("");
@@ -126,22 +128,30 @@ export default function BookDetailsModal({ book, readerId, onClose, show }: Book
       submitLabel="I Finished It"
     >
       <p className="mb-1">By {book.author}</p>
-      <p className="mb-3 text-sm text-gray-600">Genre: {book.genre} | Year: {book.published_year}</p>
-
+      <p className="mb-3 text-sm text-gray-600">
+        Genre: {book.genre} | Year: {book.published_year}
+      </p>
       {review && review.reading_status && (
-        <p className="mb-2 text-sm text-green-600">Current status: {review.reading_status} by {review.reader_name || review.name || "You"}</p>
+        <p className="mb-2 text-sm text-green-600">
+          Current status: {review.reading_status} by{" "}
+          {review.reader_name || review.name || "You"}
+        </p>
       )}
-
       <button
         type="button"
         onClick={handleStartReading}
         disabled={review?.reading_status === "In Progress"}
-        className={`bg-blue-600 text-white px-4 py-2 rounded mb-1 ${review?.reading_status === "In Progress" ? "opacity-50 cursor-not-allowed" : ""}`}
+        className={`bg-blue-600 text-white px-4 py-2 rounded mb-1 ${
+          review?.reading_status === "In Progress"
+            ? "opacity-50 cursor-not-allowed"
+            : ""
+        }`}
       >
         I&apos;m Reading This
       </button>
-      {startFeedback && <p className="text-sm text-green-700 mb-2">{startFeedback}</p>}
-
+      {startFeedback && (
+        <p className="text-sm text-green-700 mb-2">{startFeedback}</p>
+      )}
       <div className="mb-2">
         <label className="block">Rating (1–5):</label>
         <input
@@ -155,7 +165,11 @@ export default function BookDetailsModal({ book, readerId, onClose, show }: Book
       </div>
       <div className="mb-2">
         <label className="block">Emoji:</label>
-        <select value={emoji} onChange={(e) => setEmoji(e.target.value)} className="border p-1 w-full">
+        <select
+          value={emoji}
+          onChange={(e) => setEmoji(e.target.value)}
+          className="border p-1 w-full"
+        >
           <option value="">Select emoji</option>
           <option value="😍">😍</option>
           <option value="😴">😴</option>
@@ -170,25 +184,47 @@ export default function BookDetailsModal({ book, readerId, onClose, show }: Book
           className="border p-1 w-full"
         />
       </div>
-
-      {finishFeedback && <p className="text-sm text-green-700 mt-1 mb-2">{finishFeedback}</p>}
-
+      {finishFeedback && (
+        <p className="text-sm text-green-700 mt-1 mb-2">{finishFeedback}</p>
+      )}
       {reactions.length > 0 && (
         <div className="mt-6">
-          <h3 className="text-xl font-semibold mb-2">Reactions from other readers:</h3>
+          <h3 className="text-xl font-semibold mb-2">
+            Reactions from other readers:
+          </h3>
           <ul className="space-y-4 max-h-60 overflow-y-auto">
             {reactions.map((reaction, index) => (
               <li key={index} className="border p-3 rounded">
-                <p><strong>Reader:</strong> {reaction.name || "Anonymous"}</p>
-                <p><strong>Status:</strong> {reaction.reading_status}</p>
-                <p><strong>Emoji:</strong> {reaction.emoji}</p>
-                <p><strong>Rating:</strong> {reaction.rating}</p>
-                <p><strong>Comment:</strong> {reaction.comment}</p>
+                <p>
+                  <strong>Reader:</strong> {reaction.name || "Anonymous"}
+                </p>
+                <p>
+                  <strong>Status:</strong> {reaction.reading_status}
+                </p>
+                <p>
+                  <strong>Emoji:</strong> {reaction.emoji}
+                </p>
+                <p>
+                  <strong>Rating:</strong> {reaction.rating}
+                </p>
+                <p>
+                  <strong>Comment:</strong> {reaction.comment}
+                </p>
               </li>
             ))}
           </ul>
         </div>
       )}
+      <button
+        type="button"
+        onClick={(e) => {
+          e.stopPropagation();
+          router.push(`/books/${book.id}/reactions`);
+        }}
+        className="bg-purple-500 text-white px-2 py-1 rounded mr-2"
+      >
+        View Reactions
+      </button>
     </ModalForm>
   );
 }
