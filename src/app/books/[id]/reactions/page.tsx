@@ -6,14 +6,8 @@ import {
   PieChart, 
   Pie, 
   Cell, 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
   Tooltip, 
-  ResponsiveContainer,
-  Legend
+  ResponsiveContainer
 } from 'recharts';
 
 export default function BookReactionsPage() {
@@ -72,14 +66,6 @@ export default function BookReactionsPage() {
       color: '#F59E0B'
     }
   ].filter(item => item.value > 0) : [];
-
-  const ratingData = reactions.length > 0 ? [
-    { rating: '1⭐', count: reactions.filter(r => r.rating === 1).length },
-    { rating: '2⭐', count: reactions.filter(r => r.rating === 2).length },
-    { rating: '3⭐', count: reactions.filter(r => r.rating === 3).length },
-    { rating: '4⭐', count: reactions.filter(r => r.rating === 4).length },
-    { rating: '5⭐', count: reactions.filter(r => r.rating === 5).length },
-  ].filter(item => item.count > 0) : [];
 
   const avgRating = reactions.length > 0 
     ? (reactions.reduce((sum, r) => sum + r.rating, 0) / reactions.length).toFixed(1)
