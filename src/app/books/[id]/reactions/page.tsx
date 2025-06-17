@@ -2,6 +2,13 @@
 
 import { useParams, useRouter } from "next/navigation";
 import { useBook, useBookReactions } from "@/hooks/useBookData";
+import { 
+  PieChart, 
+  Pie, 
+  Cell, 
+  Tooltip, 
+  ResponsiveContainer
+} from 'recharts';
 
 export default function BookReactionsPage() {
   const params = useParams();
@@ -41,6 +48,29 @@ export default function BookReactionsPage() {
     ));
   };
 
+  // Prepare data for visualizations
+  const statusData = reactions.length > 0 ? [
+    { 
+      name: 'Finished', 
+      value: reactions.filter(r => r.reading_status === 'Finished').length,
+      color: '#10B981'
+    },
+    { 
+      name: 'In Progress', 
+      value: reactions.filter(r => r.reading_status === 'In Progress').length,
+      color: '#3B82F6'
+    },
+    { 
+      name: 'Want to Read', 
+      value: reactions.filter(r => r.reading_status === 'Want to Read').length,
+      color: '#F59E0B'
+    }
+  ].filter(item => item.value > 0) : [];
+
+  const avgRating = reactions.length > 0 
+    ? (reactions.reduce((sum, r) => sum + r.rating, 0) / reactions.length).toFixed(1)
+    : '0';
+
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
@@ -76,7 +106,7 @@ export default function BookReactionsPage() {
         >
           ← Back to Books
         </button>
-        
+
         {book && (
           <div className="bg-white rounded-lg shadow-md p-6">
             <h1 className="text-3xl font-bold mb-2">{book.title}</h1>
@@ -93,7 +123,7 @@ export default function BookReactionsPage() {
         <h2 className="text-2xl font-semibold mb-4">
           Reader Reactions ({reactions.length})
         </h2>
-        
+
         {reactions.length === 0 ? (
           <div className="bg-gray-50 rounded-lg p-8 text-center">
             <p className="text-gray-500 text-lg">
@@ -149,34 +179,72 @@ export default function BookReactionsPage() {
       {/* Summary Stats */}
       {reactions.length > 0 && (
         <div className="bg-white rounded-lg shadow-md p-6">
-          <h3 className="text-xl font-semibold mb-4">Summary</h3>
+          <h3 className="text-xl font-semibold mb-4">Summary Statistics</h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="text-center">
-              <p className="text-2xl font-bold text-blue-600">
+            <div className="text-center p-4 bg-blue-50 rounded-lg">
+              <p className="text-3xl font-bold text-blue-600">
                 {reactions.length}
               </p>
-              <p className="text-sm text-gray-600">Total Reactions</p>
+              <p className="text-sm text-gray-600 mt-1">Total Reactions</p>
             </div>
-            <div className="text-center">
-              <p className="text-2xl font-bold text-green-600">
-                {reactions.filter(r => r.reading_status === 'Finished').length}
-              </p>
-              <p className="text-sm text-gray-600">Finished</p>
-            </div>
-            <div className="text-center">
-              <p className="text-2xl font-bold text-blue-600">
-                {reactions.filter(r => r.reading_status === 'In Progress').length}
-              </p>
-              <p className="text-sm text-gray-600">Reading</p>
-            </div>
-            <div className="text-center">
-              <p className="text-2xl font-bold text-yellow-600">
-                {reactions.length > 0 
-                  ? (reactions.reduce((sum, r) => sum + r.rating, 0) / reactions.length).toFixed(1)
-                  : '0'
+            <div className="text-center p-4 bg-green-50 rounded-lg">
+              <p className="text-3xl font-bold text-green-600">
+                {
+                  reactions.filter((r) => r.reading_status === "Finished")
+                    .length
                 }
               </p>
-              <p className="text-sm text-gray-600">Avg Rating</p>
+              <p className="text-sm text-gray-600 mt-1">Finished</p>
+            </div>
+            <div className="text-center p-4 bg-blue-50 rounded-lg">
+              <p className="text-3xl font-bold text-blue-600">
+                {
+                  reactions.filter((r) => r.reading_status === "In Progress")
+                    .length
+                }
+              </p>
+              <p className="text-sm text-gray-600 mt-1">Currently Reading</p>
+            </div>
+            <div className="text-center p-4 bg-yellow-50 rounded-lg">
+              <p className="text-3xl font-bold text-yellow-600">
+                {avgRating}⭐
+              </p>
+              <p className="text-sm text-gray-600 mt-1">Average Rating</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Visualizations Section */}
+      {reactions.length > 0 && (
+        <div className="mb-6">
+          <div className="grid grid-cols-1 lg:grid-cols-1 gap-6 mb-8">
+            {/* Reading Status Distribution */}
+            <div className="bg-white rounded-lg shadow-md p-6">
+              <h4 className="text-lg font-semibold mb-4">
+                Reading Status Distribution
+              </h4>
+              <ResponsiveContainer width="100%" height={300}>
+                <PieChart>
+                  <Pie
+                    data={statusData}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    label={({ name, value, percent }) =>
+                      `${name}: ${value} (${(percent * 100).toFixed(0)}%)`
+                    }
+                    outerRadius={80}
+                    fill="#8884d8"
+                    dataKey="value"
+                  >
+                    {statusData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
             </div>
           </div>
         </div>
