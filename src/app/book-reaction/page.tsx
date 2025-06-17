@@ -4,6 +4,8 @@ import { useEffect, useState, Suspense } from "react";
 import { API_BASE_URL } from "../../lib/api";
 import { useSearchParams } from "next/navigation";
 
+export const dynamic = 'force-dynamic';
+
 interface Reaction {
   name: string;
   reading_status: string;
