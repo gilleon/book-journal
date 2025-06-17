@@ -7,6 +7,7 @@ interface ModalFormProps {
   onSubmit: (e: React.FormEvent) => void;
   children: React.ReactNode;
   confirmOnly?: boolean;
+  submitLabel?: string;
 }
 
 export default function ModalForm({
@@ -16,6 +17,7 @@ export default function ModalForm({
   onSubmit,
   children,
   confirmOnly = false,
+  submitLabel,
 }: ModalFormProps) {
   if (!show) return null;
 
@@ -62,7 +64,7 @@ export default function ModalForm({
                   type="submit"
                   className="bg-green-800 text-white px-4 py-2 rounded"
                 >
-                  Submit
+                  {submitLabel || "Submit"}
                 </button>
                 <button
                   type="button"

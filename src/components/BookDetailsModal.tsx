@@ -123,6 +123,7 @@ export default function BookDetailsModal({ book, readerId, onClose, show }: Book
         e.preventDefault();
         handleFinishReading();
       }}
+      submitLabel="I Finished It"
     >
       <p className="mb-1">By {book.author}</p>
       <p className="mb-3 text-sm text-gray-600">Genre: {book.genre} | Year: {book.published_year}</p>
