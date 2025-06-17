@@ -128,7 +128,8 @@ export default function BookDetailsModal({ book, readerId, onClose, show }: Book
 
         <button
           onClick={handleStartReading}
-          className="bg-blue-600 text-white px-4 py-2 rounded mb-1"
+          disabled={review?.reading_status === "In Progress"}
+          className={`bg-blue-600 text-white px-4 py-2 rounded mb-1 ${review?.reading_status === "In Progress" ? "opacity-50 cursor-not-allowed" : ""}`}
         >
           I&apos;m Reading This
         </button>
