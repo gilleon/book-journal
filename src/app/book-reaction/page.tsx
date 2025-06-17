@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { API_BASE_URL } from "../../lib/api";
 import { useSearchParams } from "next/navigation";
 
@@ -12,7 +12,7 @@ interface Reaction {
   comment: string;
 }
 
-export default function BookReactionsPage() {
+function BookReactionsContent() {
   const [reactions, setReactions] = useState<Reaction[]>([]);
   const [bookTitle, setBookTitle] = useState<string>("");
   const searchParams = useSearchParams();
@@ -66,5 +66,13 @@ export default function BookReactionsPage() {
         </ul>
       )}
     </div>
+  );
+}
+
+export default function BookReactionsPage() {
+  return (
+    <Suspense fallback={<div className="text-center mt-4">Loading...</div>}>
+      <BookReactionsContent />
+    </Suspense>
   );
 }
