@@ -15,12 +15,16 @@ interface DataTableProps<T> {
   onRowClick?: (item: T) => void;
 }
 
-export default function DataTable<T extends Record<string, unknown>>({
+export default function DataTable<T>({
   data,
   columns,
   actions,
   onRowClick,
 }: DataTableProps<T>) {
+  const getValue = (item: T, accessor: string): unknown => {
+    return (item as Record<string, unknown>)[accessor];
+  };
+
   return (
     <div className="overflow-x-auto">
       <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
@@ -57,7 +61,7 @@ export default function DataTable<T extends Record<string, unknown>>({
                   key={column.accessor}
                   className={`px-3 py-4 sm:px-6 sm:py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 ${column.className || ''}`}
                 >
-                  {String(item[column.accessor] || '')}
+                  {String(getValue(item, column.accessor) || '')}
                 </td>
               ))}
               {actions && (
