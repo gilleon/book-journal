@@ -95,8 +95,8 @@ export function useBookData() {
   const [filterGenre, setFilterGenre] = useState('');
   const [selectedBook, setSelectedBook] = useState<Book | null>(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
-  const [readerId, setReaderId] = useState<number | null>(null);
   const [updateMethod, setUpdateMethod] = useState<'PUT' | 'PATCH'>('PUT');
+  const [readerId, setReaderId] = useState<number | null>(null);
 
   const {
     items: books,
