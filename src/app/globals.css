@@ -22,11 +22,12 @@ body {
   color: var(--primary-color);
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  min-height: 100vh;
   margin: 0;
   background-image: url("/images/bg.png");
   background-position: center bottom;
   background-repeat: no-repeat;
+  background-attachment: fixed;
 }
 .main-nav {
   width: 100%;
@@ -74,7 +75,7 @@ body {
 }
 
 .container {
-  background-color: var(--primary-bg);
+  background-color: transparent;
   text-align: center;
   display: flex;
   padding: 141.153px 132.162px 0px 132.162px;
