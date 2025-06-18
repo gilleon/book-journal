@@ -6,7 +6,8 @@ import DataTable from "../../components/DataTable";
 import FilterDropdown from "../../components/FilterDropdown";
 import { API_BASE_URL } from "../../lib/api";
 import BookDetailsModal from "../../components/BookDetailsModal";
-import InputField from "../../components/InputField";
+import InputField from "../../ui/InputField";
+import Button from "@/ui/Button";
 
 type Book = {
   id: number;
@@ -208,25 +209,29 @@ export default function BooksPage() {
           ]}
           actions={(book) => (
             <>
-              <button
+              <Button
                 onClick={(e) => {
                   e.stopPropagation();
                   handleEdit(e, book);
                 }}
                 className="bg-blue-500 text-white px-2 py-1 rounded mr-2"
+                variant="primary"
+                size="sm"
               >
                 Edit
-              </button>
+              </Button>
 
-              <button
+              <Button
                 onClick={(e) => {
                   e.stopPropagation();
                   setConfirmDeleteId(book.id);
                 }}
                 className="bg-red-500 text-white px-2 py-1 rounded"
+                variant="danger"
+                size="sm"
               >
                 Delete
-              </button>
+              </Button>
             </>
           )}
           onRowClick={(book) => {
@@ -248,12 +253,14 @@ export default function BooksPage() {
           <p>Are you sure you want to delete this book?</p>
         </ModalForm>
       </div>
-      <button
+      <Button
         onClick={() => setShowModal(true)}
         className="mb-4 bg-green-700 text-white px-4 py-2 rounded add-plant-button"
+        variant="success"
+        size="md"
       >
         ➕ Add New Book
-      </button>
+      </Button>
       {/* Book Details Modal */}
       {showDetailsModal && selectedBook && readerId !== null && (
         <BookDetailsModal
