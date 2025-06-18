@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { API_BASE_URL } from "../lib/api";
+import { API_BASE_URL } from "@/lib/api";
 
 export default function ReaderInitModal() {
   const [showModal, setShowModal] = useState(false);

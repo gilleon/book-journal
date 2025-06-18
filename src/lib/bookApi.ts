@@ -1,4 +1,4 @@
-import { API_BASE_URL } from './api';
+import { API_BASE_URL } from '@/lib/api';
 
 export interface Book {
   id?: number;

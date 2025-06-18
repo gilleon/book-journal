@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { bookApiService, Book, Reaction, Review } from '@/lib/bookApi';
 import { useCrudData } from './useCrudData';
-import { API_BASE_URL } from '../lib/api';
+import { API_BASE_URL } from '@/lib/api';
 
 export function useBook(bookId: string | number) {
   const [book, setBook] = useState<Book | null>(null);
