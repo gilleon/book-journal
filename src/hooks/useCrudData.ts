@@ -1,29 +1,26 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 
-interface CrudItem {
-  id: number;
-}
-
-interface CrudHookOptions<T extends CrudItem> {
+interface CrudConfig<T, F = Record<string, unknown>> {
   endpoint: string;
-  initialFormData: Omit<T, 'id'>;
-  transformFormData?: (data: Omit<T, 'id'>) => any;
+  initialFormData: F;
+  transformFormData?: (data: F) => Partial<T>;
 }
 
-export function useCrudData<T extends CrudItem>({
+export function useCrudData<T extends { id?: number }, F = Record<string, unknown>>({
   endpoint,
   initialFormData,
-  transformFormData = (data) => data,
-}: CrudHookOptions<T>) {
+  transformFormData
+}: CrudConfig<T, F>) {
   const [items, setItems] = useState<T[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>('');
-  const [formData, setFormData] = useState<Omit<T, 'id'>>(initialFormData);
+  
+  const [formData, setFormData] = useState<F>(initialFormData);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null);
 
-  const fetchItems = useCallback(async () => {
+  const fetchItems = async () => {
     try {
       setLoading(true);
       setError('');
@@ -34,19 +31,24 @@ export function useCrudData<T extends CrudItem>({
       const data = await response.json();
       setItems(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch items');
+      const errorMessage = err instanceof Error ? err.message : 'Failed to fetch items';
+      setError(errorMessage);
       console.error('Error fetching items:', err);
+      throw new Error(errorMessage);
     } finally {
       setLoading(false);
     }
-  }, [endpoint]);
+  };
 
   useEffect(() => {
     fetchItems();
-  }, [fetchItems]);
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setFormData({ 
+      ...formData, 
+      [e.target.name]: e.target.value 
+    } as F);
   };
 
   const resetForm = () => {
@@ -59,14 +61,14 @@ export function useCrudData<T extends CrudItem>({
     e.preventDefault();
     
     try {
+      const dataToSubmit = transformFormData ? transformFormData(formData) : formData;
       const method = editingId ? 'PUT' : 'POST';
       const url = editingId ? `${endpoint}/${editingId}` : endpoint;
-      const transformedData = transformFormData(formData);
 
       const response = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(transformedData),
+        body: JSON.stringify(dataToSubmit),
       });
 
       if (!response.ok) {
@@ -82,19 +84,24 @@ export function useCrudData<T extends CrudItem>({
   };
 
   const handleEdit = (item: T) => {
-    setEditingId(item.id);
-    // Extract all properties except 'id'
-    const { id, ...itemData } = item;
-    setFormData(itemData as Omit<T, 'id'>);
+    if (item.id !== undefined) {
+      setEditingId(item.id);
+    }
+    // Convert item back to form data format
+    setFormData(item as unknown as F);
     setShowModal(true);
   };
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (itemId: number) => {
     try {
-      const response = await fetch(`${endpoint}/${id}`, { method: 'DELETE' });
+      const response = await fetch(`${endpoint}/${itemId}`, { 
+        method: 'DELETE' 
+      });
+      
       if (!response.ok) {
         throw new Error(`Failed to delete item: ${response.statusText}`);
       }
+      
       await fetchItems();
       setConfirmDeleteId(null);
     } catch (err) {

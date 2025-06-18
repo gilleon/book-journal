@@ -84,18 +84,11 @@ export function useReaderReview(readerId: number, bookId: string | number) {
   return { review, loading, error, refetch: fetchReview };
 }
 
-interface BookFormData {
-  title: string;
-  author: string;
-  genre: string;
-  published_year: string;
-}
-
 interface BookWithId extends Book {
   id: number;
 }
 
-interface BookFormType {
+interface BookFormData {
   title: string;
   author: string;
   genre: string;
@@ -128,15 +121,15 @@ export function useBookData() {
     handleCloseDeleteModal,
     fetchItems: fetchBooks,
     clearError,
-  } = useCrudData<BookWithId>({
+  } = useCrudData<BookWithId, BookFormData>({
     endpoint: `${API_BASE_URL}/books`,
     initialFormData: {
       title: '',
       author: '',
       genre: '',
       published_year: ''
-    } as any,
-    transformFormData: (data: any) => ({
+    },
+    transformFormData: (data: BookFormData) => ({
       title: data.title,
       author: data.author,
       genre: data.genre,
@@ -203,48 +196,35 @@ export function useBookData() {
   };
 
   return {
-    // Books data
     books,
     loading,
     error,
     filteredBooks: getFilteredBooks(),
     genres: getGenres(),
-
-    // Form state
     formData,
     editingId,
     updateMethod,
     isEditing,
-
-    // UI state
     showModal,
     filterGenre,
     confirmDeleteId,
     selectedBook,
     showDetailsModal,
     readerId,
-
-    // Form handlers
     handleChange,
     resetForm,
     populateForm,
     setUpdateMethod,
-
-    // CRUD operations
     handleSubmit,
     handleEdit: handleEditBook,
     handleDelete: handleDeleteBook,
     fetchBooks,
-
-    // UI handlers
     handleRowClick,
     handleCloseModal,
     handleCloseDetailsModal,
     handleOpenAddModal,
     handleCloseDeleteModal,
     handleOpenDeleteModal: handleOpenDeleteModalBook,
-
-    // Utility functions
     setFilterGenre,
     clearError,
   };
