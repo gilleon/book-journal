@@ -2,6 +2,8 @@
 
 import { useParams, useRouter } from "next/navigation";
 import { useBook, useBookReactions } from "@/hooks/useBookData";
+import Button from "@/ui/Button";
+import LoadingSpinner from "@/ui/LoadingSpinner";
 import { 
   PieChart, 
   Pie, 
@@ -72,11 +74,7 @@ export default function BookReactionsPage() {
     : '0';
 
   if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="text-lg">Loading reactions...</div>
-      </div>
-    );
+    return <LoadingSpinner message="Loading reactions..." />;
   }
 
   if (error) {
@@ -86,12 +84,13 @@ export default function BookReactionsPage() {
           <p className="font-bold">Error:</p>
           <p>{error}</p>
         </div>
-        <button
+        <Button
           onClick={() => router.back()}
-          className="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+          variant="primary"
+          className="mt-4"
         >
           Go Back
-        </button>
+        </Button>
       </div>
     );
   }
@@ -100,12 +99,14 @@ export default function BookReactionsPage() {
     <div className="p-6 max-w-6xl mx-auto">
       {/* Header */}
       <div className="mb-8">
-        <button
+        <Button
           onClick={() => router.back()}
-          className="mb-4 text-blue-600 hover:text-blue-800 flex items-center"
+          variant="secondary"
+          size="sm"
+          className="mb-4"
         >
           ← Back to Books
-        </button>
+        </Button>
 
         {book && (
           <div className="bg-white rounded-lg shadow-md p-6">
