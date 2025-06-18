@@ -74,7 +74,7 @@ export default function ReadersPage() {
           id="name"
           label="Name"
           name="name"
-          value={formData.name}
+          value={formData.name as string}
           onChange={handleChange}
           placeholder="Enter reader name"
           required
@@ -85,7 +85,7 @@ export default function ReadersPage() {
           label="Email"
           type="email"
           name="email"
-          value={formData.email}
+          value={formData.email as string}
           onChange={handleChange}
           placeholder="Enter reader email"
           required

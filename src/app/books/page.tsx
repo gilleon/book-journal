@@ -175,9 +175,15 @@ export default function BooksPage() {
         </p>
       </ModalForm>
 
-      {showDetailsModal && selectedBook && readerId !== null && (
+      {showDetailsModal && selectedBook && typeof selectedBook.id === "number" && readerId !== null && (
         <BookDetailsModal
-          book={selectedBook}
+          book={selectedBook as {
+            id: number;
+            title: string;
+            author: string;
+            genre: string;
+            published_year: number;
+          }}
           readerId={readerId}
           show={showDetailsModal}
           onClose={handleCloseDetailsModal}
