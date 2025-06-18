@@ -1,5 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { bookApiService, Book, Reaction, Review } from '@/lib/bookApi';
+import { useCrudData } from './useCrudData';
+import { API_BASE_URL } from '../lib/api';
 
 export function useBook(bookId: string | number) {
   const [book, setBook] = useState<Book | null>(null);
@@ -82,7 +84,18 @@ export function useReaderReview(readerId: number, bookId: string | number) {
   return { review, loading, error, refetch: fetchReview };
 }
 
-interface BookFormState {
+interface BookFormData {
+  title: string;
+  author: string;
+  genre: string;
+  published_year: string;
+}
+
+interface BookWithId extends Book {
+  id: number;
+}
+
+interface BookFormType {
   title: string;
   author: string;
   genre: string;
@@ -90,40 +103,46 @@ interface BookFormState {
 }
 
 export function useBookData() {
-  const [books, setBooks] = useState<Book[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string>('');
-
-  const [formData, setFormData] = useState<BookFormState>({
-    title: '',
-    author: '',
-    genre: '',
-    published_year: ''
-  });
-  const [editingId, setEditingId] = useState<number | null>(null);
-  const [updateMethod, setUpdateMethod] = useState<'PUT' | 'PATCH'>('PUT');
-
-  const [showModal, setShowModal] = useState(false);
   const [filterGenre, setFilterGenre] = useState('');
-  const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null);
   const [selectedBook, setSelectedBook] = useState<Book | null>(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
-
   const [readerId, setReaderId] = useState<number | null>(null);
+  const [updateMethod, setUpdateMethod] = useState<'PUT' | 'PATCH'>('PUT');
 
-  const fetchBooks = async () => {
-    try {
-      setLoading(true);
-      setError('');
-      const booksData = await bookApiService.getAllBooks();
-      setBooks(booksData);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch books');
-      console.error('Error fetching books:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const {
+    items: books,
+    loading,
+    error,
+    formData,
+    editingId,
+    showModal,
+    confirmDeleteId,
+    isEditing,
+    handleChange,
+    handleSubmit,
+    handleEdit,
+    handleDelete,
+    handleOpenAddModal,
+    handleCloseModal,
+    handleOpenDeleteModal,
+    handleCloseDeleteModal,
+    fetchItems: fetchBooks,
+    clearError,
+  } = useCrudData<BookWithId>({
+    endpoint: `${API_BASE_URL}/books`,
+    initialFormData: {
+      title: '',
+      author: '',
+      genre: '',
+      published_year: ''
+    } as any,
+    transformFormData: (data: any) => ({
+      title: data.title,
+      author: data.author,
+      genre: data.genre,
+      published_year: Number(data.published_year)
+    })
+  });
 
   useEffect(() => {
     const storedReader = localStorage.getItem("reader");
@@ -133,88 +152,23 @@ export function useBookData() {
         setReaderId(parsed.id);
       }
     }
-    fetchBooks();
   }, []);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const resetForm = () => {
-    setFormData({ title: '', author: '', genre: '', published_year: '' });
-    setEditingId(null);
-    setShowModal(false);
-    setUpdateMethod('PUT');
-  };
-
-  const populateForm = (book: Book) => {
-    setEditingId(book.id!);
-    setFormData({
-      title: book.title,
-      author: book.author,
-      genre: book.genre,
-      published_year: book.published_year.toString()
-    });
-    setUpdateMethod('PUT');
-    setShowModal(true);
+  const handleEditBook = (e: React.MouseEvent, book: Book) => {
+    e.stopPropagation();
+    const bookWithId = { ...book, id: book.id! } as BookWithId;
+    handleEdit(bookWithId);
     setShowDetailsModal(false);
     setSelectedBook(null);
   };
 
-  // CRUD operations
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    try {
-      const bookData: Book = {
-        ...formData,
-        published_year: Number(formData.published_year)
-      };
-
-      if (editingId) {
-        // Update existing book
-        if (updateMethod === 'PUT') {
-          await bookApiService.updateBook(editingId, bookData);
-        } else {
-          await bookApiService.patchBook(editingId, bookData);
-        }
-      } else {
-        // Create new book
-        await bookApiService.createBook(bookData);
-      }
-
-      await fetchBooks(); // Refresh the books list
-      resetForm();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to save book');
-      console.error('Error saving book:', err);
-    }
+  const handleDeleteBook = async (id: number) => {
+    await handleDelete(id);
   };
 
-  const handleEdit = (e: React.MouseEvent, book: Book) => {
-    e.stopPropagation();
-    populateForm(book);
-  };
-
-  const handleDelete = async (id: number) => {
-    try {
-      await bookApiService.deleteBook(id);
-      await fetchBooks(); // Refresh the books list
-      setConfirmDeleteId(null);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to delete book');
-      console.error('Error deleting book:', err);
-    }
-  };
-
-  // UI handlers
   const handleRowClick = (book: Book) => {
     setSelectedBook(book);
     setShowDetailsModal(true);
-  };
-
-  const handleCloseModal = () => {
-    resetForm();
   };
 
   const handleCloseDetailsModal = () => {
@@ -222,20 +176,11 @@ export function useBookData() {
     setSelectedBook(null);
   };
 
-  const handleOpenAddModal = () => {
-    setShowModal(true);
-  };
-
-  const handleCloseDeleteModal = () => {
-    setConfirmDeleteId(null);
-  };
-
-  const handleOpenDeleteModal = (e: React.MouseEvent, bookId: number) => {
+  const handleOpenDeleteModalBook = (e: React.MouseEvent, bookId: number) => {
     e.stopPropagation();
-    setConfirmDeleteId(bookId);
+    handleOpenDeleteModal(bookId);
   };
 
-  // Utility functions
   const getFilteredBooks = () => {
     return books.filter((book) => !filterGenre || book.genre === filterGenre);
   };
@@ -244,11 +189,18 @@ export function useBookData() {
     return [...new Set(books.map((book) => book.genre))];
   };
 
-  const clearError = () => {
-    setError('');
+  const populateForm = (book: Book) => {
+    const bookWithId = { ...book, id: book.id! } as BookWithId;
+    handleEdit(bookWithId);
+    setUpdateMethod('PUT');
+    setShowDetailsModal(false);
+    setSelectedBook(null);
   };
 
-  const isEditing = editingId !== null;
+  const resetForm = () => {
+    handleCloseModal();
+    setUpdateMethod('PUT');
+  };
 
   return {
     // Books data
@@ -280,8 +232,8 @@ export function useBookData() {
 
     // CRUD operations
     handleSubmit,
-    handleEdit,
-    handleDelete,
+    handleEdit: handleEditBook,
+    handleDelete: handleDeleteBook,
     fetchBooks,
 
     // UI handlers
@@ -290,7 +242,7 @@ export function useBookData() {
     handleCloseDetailsModal,
     handleOpenAddModal,
     handleCloseDeleteModal,
-    handleOpenDeleteModal,
+    handleOpenDeleteModal: handleOpenDeleteModalBook,
 
     // Utility functions
     setFilterGenre,
