@@ -103,7 +103,7 @@ export default function BookReactionsPage() {
           onClick={() => router.back()}
           variant="secondary"
           size="sm"
-          className="mb-4"
+          className="mb-4 dark:text-gray-50"
         >
           ← Back to Books
         </Button>
@@ -179,7 +179,7 @@ export default function BookReactionsPage() {
 
       {/* Summary Stats */}
       {reactions.length > 0 && (
-        <div className="bg-white rounded-lg shadow-md p-6">
+        <div className="bg-white rounded-lg shadow-md mb-6 p-6">
           <h3 className="text-xl font-semibold mb-4">Summary Statistics</h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="text-center p-4 bg-blue-50 rounded-lg">
