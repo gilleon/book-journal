@@ -1,112 +1,93 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import ModalForm from "../../components/ModalForm";
 import DataTable from "../../components/DataTable";
-import { API_BASE_URL } from "../../lib/api";
-
-type Reader = {
-  id: number;
-  name: string;
-  email: string;
-};
+import InputField from "../../ui/InputField";
+import Button from "../../ui/Button";
+import { useReaderData } from "../../hooks/useReaderData";
 
 export default function ReadersPage() {
-  const [readers, setReaders] = useState<Reader[]>([]);
-  const [formData, setFormData] = useState({ name: "", email: "" });
-  const [editingId, setEditingId] = useState<number | null>(null);
-  const [showModal, setShowModal] = useState(false);
-  // State for delete confirmation modal
-  const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null);
+  const {
+    readers,
+    loading,
+    error,
+    formData,
+    isEditing,
+    showModal,
+    confirmDeleteId,
+    handleChange,
+    handleSubmit,
+    handleEdit,
+    handleDelete,
+    handleOpenAddModal,
+    handleCloseModal,
+    handleOpenDeleteModal,
+    handleCloseDeleteModal,
+    fetchReaders,
+  } = useReaderData();
 
-  const api = `${API_BASE_URL}/readers`;
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="text-xl text-gray-600 dark:text-gray-400">
+          Loading readers...
+        </div>
+      </div>
+    );
+  }
 
-  const fetchReaders = () => {
-    fetch(api)
-      .then((res) => res.json())
-      .then(setReaders);
-  };
-
-  useEffect(() => {
-    fetchReaders();
-  }, []);
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const method = editingId ? "PUT" : "POST";
-    const endpoint = editingId ? `${api}/${editingId}` : api;
-
-    const res = await fetch(endpoint, {
-      method,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData),
-    });
-
-    if (res.ok) {
-      fetchReaders();
-      setFormData({ name: "", email: "" });
-      setEditingId(null);
-      setShowModal(false);
-    }
-  };
-
-  const handleEdit = (reader: Reader) => {
-    setEditingId(reader.id);
-    setFormData({ name: reader.name, email: reader.email });
-    setShowModal(true);
-  };
-
-  const handleDelete = async (id: number) => {
-    const res = await fetch(`${api}/${id}`, { method: "DELETE" });
-    if (res.ok) fetchReaders();
-  };
+  if (error) {
+    return (
+      <div className="flex flex-col justify-center items-center min-h-screen">
+        <div className="text-xl text-red-600 dark:text-red-400 mb-4">
+          Error: {error}
+        </div>
+        <Button onClick={() => fetchReaders()} variant="primary">
+          Retry
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <>
       <div className="p-6 max-w-5xl mx-auto">
-        <h1 className="text-3xl font-bold mb-4">Readers</h1>
+        <h1 className="text-3xl font-bold mb-4 text-gray-900 dark:text-gray-100">
+          Readers
+        </h1>
 
-        <button
-          onClick={() => {
-            setFormData({ name: "", email: "" });
-            setEditingId(null);
-            setShowModal(true);
-          }}
+        <Button
+          onClick={handleOpenAddModal}
           className="mb-4 bg-green-700 text-white px-4 py-2 rounded"
+          variant="success"
         >
           ➕ Add New Reader
-        </button>
+        </Button>
 
         <ModalForm
-          title={editingId ? "Edit Reader" : "Add Reader"}
+          title={isEditing ? "Edit Reader" : "Add Reader"}
           show={showModal}
-          onClose={() => {
-            setFormData({ name: "", email: "" });
-            setEditingId(null);
-            setShowModal(false);
-          }}
+          onClose={handleCloseModal}
           onSubmit={handleSubmit}
         >
-          <input
-            type="text"
+          <InputField
+            id="name"
+            label="Name"
             name="name"
-            placeholder="Name"
             value={formData.name}
             onChange={handleChange}
-            className="border p-2"
+            placeholder="Enter reader name"
             required
           />
-          <input
+
+          <InputField
+            id="email"
+            label="Email"
             type="email"
             name="email"
-            placeholder="Email"
             value={formData.email}
             onChange={handleChange}
-            className="border p-2"
+            placeholder="Enter reader email"
             required
           />
         </ModalForm>
@@ -119,33 +100,37 @@ export default function ReadersPage() {
           ]}
           actions={(reader) => (
             <>
-              <button
+              <Button
                 onClick={() => handleEdit(reader)}
-                className="text-blue-600"
+                variant="primary"
+                size="sm"
+                className="mr-2"
               >
                 Edit
-              </button>
-              <button
-                onClick={() => setConfirmDeleteId(reader.id)}
-                className="text-red-600 ml-2"
+              </Button>
+              <Button
+                onClick={() => handleOpenDeleteModal(reader.id)}
+                variant="danger"
+                size="sm"
               >
                 Delete
-              </button>
+              </Button>
             </>
           )}
         />
-        {/* Delete confirmation modal */}
+
         <ModalForm
           title="Confirm Delete"
           show={confirmDeleteId !== null}
-          onClose={() => setConfirmDeleteId(null)}
+          onClose={handleCloseDeleteModal}
           onSubmit={() => {
             if (confirmDeleteId !== null) handleDelete(confirmDeleteId);
-            setConfirmDeleteId(null);
           }}
           confirmOnly
         >
-          <p>Are you sure you want to delete this reader?</p>
+          <p className="text-gray-700 dark:text-gray-300">
+            Are you sure you want to delete this reader?
+          </p>
         </ModalForm>
       </div>
     </>
