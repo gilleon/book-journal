@@ -20,7 +20,6 @@ export default function ReaderInitModal() {
     if (!readerName.trim() || !readerEmail.trim()) return;
 
     try {
-      // Check if reader exists by email using the new endpoint
       const getRes = await fetch(
         `${API_BASE_URL}/readers/by-email?email=${encodeURIComponent(readerEmail)}`
       );
@@ -38,7 +37,6 @@ export default function ReaderInitModal() {
         throw new Error(`Unexpected response: ${getRes.status}`);
       }
 
-      // If no existing reader found, create a new one
       const postRes = await fetch(`${API_BASE_URL}/readers`, {
         method: "POST",
         headers: {
@@ -55,6 +53,7 @@ export default function ReaderInitModal() {
         alert("Failed to create reader.");
       }
     } catch (error) {
+      console.error("Error creating reader:", error);
       alert("Error creating reader.");
     }
   };
@@ -64,7 +63,7 @@ export default function ReaderInitModal() {
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-80 z-50">
       <div className="bg-white p-6 rounded-md w-full max-w-md shadow-lg">
-        <h2 className="text-lg font-semibold mb-4">Who’s using this device?</h2>
+        <h2 className="text-lg font-semibold mb-4">Who is using this device?</h2>
         <form onSubmit={handleSubmit}>
           <input
             type="text"
