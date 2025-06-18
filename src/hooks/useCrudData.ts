@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 interface CrudConfig<T, F = Record<string, unknown>> {
   endpoint: string;
@@ -20,7 +20,7 @@ export function useCrudData<T extends { id?: number }, F = Record<string, unknow
   const [showModal, setShowModal] = useState(false);
   const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null);
 
-  const fetchItems = async () => {
+  const fetchItems = useCallback(async () => {
     try {
       setLoading(true);
       setError('');
@@ -38,11 +38,11 @@ export function useCrudData<T extends { id?: number }, F = Record<string, unknow
     } finally {
       setLoading(false);
     }
-  };
+  }, [endpoint]);
 
   useEffect(() => {
     fetchItems();
-  }, []);
+  }, [fetchItems]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ 
@@ -87,7 +87,6 @@ export function useCrudData<T extends { id?: number }, F = Record<string, unknow
     if (item.id !== undefined) {
       setEditingId(item.id);
     }
-    // Convert item back to form data format
     setFormData(item as unknown as F);
     setShowModal(true);
   };
