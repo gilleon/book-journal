@@ -19,11 +19,6 @@ export default function ReaderInitModal() {
     e.preventDefault();
     if (!readerName.trim() || !readerEmail.trim()) return;
 
-    console.log("Attempting to login/create user with:", {
-      name: readerName,
-      email: readerEmail,
-    });
-
     try {
       // Check if reader exists by email using the new endpoint
       const getRes = await fetch(
@@ -34,11 +29,7 @@ export default function ReaderInitModal() {
 
       if (getRes.ok) {
         const existingReader = await getRes.json();
-        console.log("Existing reader found:", existingReader);
-
         localStorage.setItem("reader", JSON.stringify(existingReader));
-        console.log("✅ Existing reader logged in:", existingReader);
-        console.log("✅ Stored in localStorage:", JSON.stringify(existingReader));
         setShowModal(false);
         return;
       } else if (getRes.status === 404) {
@@ -56,23 +47,14 @@ export default function ReaderInitModal() {
         body: JSON.stringify({ name: readerName, email: readerEmail }),
       });
 
-      console.log("Create reader response status:", postRes.status);
-
       if (postRes.ok) {
         const newReader = await postRes.json();
         localStorage.setItem("reader", JSON.stringify(newReader));
-        console.log("✅ New reader created and logged in:", newReader);
-        console.log("✅ Stored in localStorage:", JSON.stringify(newReader));
         setShowModal(false);
       } else {
-        console.error(
-          "❌ Failed to create reader, response:",
-          await postRes.text()
-        );
         alert("Failed to create reader.");
       }
     } catch (error) {
-      console.error("❌ Error with reader authentication:", error);
       alert("Error creating reader.");
     }
   };
