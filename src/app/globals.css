@@ -44,7 +44,6 @@ body {
   background-color: #ffffff;
   border-bottom: 1px solid #e0e0e0;
   padding: 16px 32px;
-  display: flex;
   justify-content: center;
   position: fixed;
   top: 0;
