@@ -84,10 +84,6 @@ export function useReaderReview(readerId: number, bookId: string | number) {
   return { review, loading, error, refetch: fetchReview };
 }
 
-interface BookWithId extends Book {
-  id: number;
-}
-
 interface BookFormData {
   title: string;
   author: string;
@@ -121,7 +117,7 @@ export function useBookData() {
     handleCloseDeleteModal,
     fetchItems: fetchBooks,
     clearError,
-  } = useCrudData<BookWithId, BookFormData>({
+  } = useCrudData<Book, BookFormData>({
     endpoint: `${API_BASE_URL}/books`,
     initialFormData: {
       title: '',
@@ -149,7 +145,7 @@ export function useBookData() {
 
   const handleEditBook = (e: React.MouseEvent, book: Book) => {
     e.stopPropagation();
-    const bookWithId = { ...book, id: book.id! } as BookWithId;
+    const bookWithId = { ...book, id: book.id! } as Book;
     handleEdit(bookWithId);
     setShowDetailsModal(false);
     setSelectedBook(null);
@@ -183,7 +179,7 @@ export function useBookData() {
   };
 
   const populateForm = (book: Book) => {
-    const bookWithId = { ...book, id: book.id! } as BookWithId;
+    const bookWithId = { ...book, id: book.id! } as Book;
     handleEdit(bookWithId);
     setUpdateMethod('PUT');
     setShowDetailsModal(false);
