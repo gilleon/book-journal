@@ -103,7 +103,7 @@ export default function BookReactionsPage() {
           onClick={() => router.back()}
           variant="secondary"
           size="sm"
-          className="mb-4 dark:text-gray-50"
+          className="flex mb-4 dark:text-blue-600 text-left"
         >
           ← Back to Books
         </Button>
