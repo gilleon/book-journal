@@ -84,10 +84,11 @@ export default function BooksPage() {
               </Button>
 
               <Button
-                onClick={(e) => handleOpenDeleteModal(e, book.id)}
+                onClick={(e) => handleOpenDeleteModal(e, book.id!)}
                 className="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded text-xs sm:text-sm font-medium transition-colors duration-200"
                 variant="danger"
                 size="sm"
+                disabled={!book.id}
               >
                 Delete
               </Button>
