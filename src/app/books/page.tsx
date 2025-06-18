@@ -6,6 +6,7 @@ import DataTable from "../../components/DataTable";
 import FilterDropdown from "../../components/FilterDropdown";
 import { API_BASE_URL } from "../../lib/api";
 import BookDetailsModal from "../../components/BookDetailsModal";
+import InputField from "../../components/InputField";
 
 type Book = {
   id: number;
@@ -113,98 +114,75 @@ export default function BooksPage() {
   return (
     <>
       <div className="p-6 plant-list-section">
-        <h1 className="text-3xl font-bold mb-4">Books</h1>
+        <h1 className="text-3xl text-center font-bold mb-4">Books</h1>
 
         <ModalForm
           title={editingId ? "Edit Book" : "Add Book"}
           show={showModal}
           onClose={() => {
-            setFormData({ title: "", author: "", genre: "", published_year: "" });
+            setFormData({
+              title: "",
+              author: "",
+              genre: "",
+              published_year: "",
+            });
             setEditingId(null);
             setShowModal(false);
             setUpdateMethod("PUT");
           }}
           onSubmit={handleSubmit}
         >
-          <label htmlFor="title">
-            Title:
-            <input
-              id="title"
-              type="text"
-              name="title"
-              placeholder="Title"
-              value={formData.title}
-              onChange={handleChange}
-              className="border p-2"
-              required
-            />
-          </label>
-          
-          <label htmlFor="author">
-            Author:
-            <input
-              id="author"
-              type="text"
-              name="author"
-              placeholder="Author"
-              value={formData.author}
-              onChange={handleChange}
-              className="border p-2"
-              required
-            />
-          </label>
-          
-          <label htmlFor="genre">
-            Genre:
-            <input
-              id="genre"
-              type="text"
-              name="genre"
-              placeholder="Genre"
-              value={formData.genre}
-              onChange={handleChange}
-              className="border p-2"
-              required
-            />
-          </label>
-          
-          <label htmlFor="published_year">
-            Year:
-            <input
-              id="published_year"
-              type="number"
-              name="published_year"
-              placeholder="Year"
-              value={formData.published_year}
-              onChange={handleChange}
-              className="border p-2"
-              required
-            />
-          </label>
-          
+          <InputField
+            id="title"
+            label="Title"
+            name="title"
+            value={formData.title}
+            onChange={handleChange}
+            required
+          />
+
+          <InputField
+            id="author"
+            label="Author"
+            name="author"
+            value={formData.author}
+            onChange={handleChange}
+            required
+          />
+
+          <InputField
+            id="genre"
+            label="Genre"
+            name="genre"
+            value={formData.genre}
+            onChange={handleChange}
+            required
+          />
+
+          <InputField
+            id="published_year"
+            label="Published Year"
+            type="number"
+            name="published_year"
+            value={formData.published_year}
+            onChange={handleChange}
+            required
+          />
+
           {editingId && (
-            <div className="sm:col-span-2 flex items-center gap-4">
-              <label>
-                <input
-                  type="radio"
-                  name="updateMethod"
-                  value="PUT"
-                  checked={updateMethod === "PUT"}
-                  onChange={() => setUpdateMethod("PUT")}
-                />{" "}
-                Full Update (PUT)
-              </label>
-              <label>
-                <input
-                  type="radio"
-                  name="updateMethod"
-                  value="PATCH"
-                  checked={updateMethod === "PATCH"}
-                  onChange={() => setUpdateMethod("PATCH")}
-                />{" "}
-                Partial Update (PATCH)
-              </label>
-            </div>
+            <InputField
+              id="updateMethod"
+              label="Update Method:"
+              type="radio"
+              name="updateMethod"
+              value={updateMethod}
+              onRadioChange={(value) => setUpdateMethod(value as 'PUT' | 'PATCH')}
+              options={[
+                { value: 'PUT', label: 'Full Update (PUT)' },
+                { value: 'PATCH', label: 'Partial Update (PATCH)' }
+              ]}
+              className="pt-4 border-t border-gray-200 dark:border-gray-700"
+            />
           )}
         </ModalForm>
 
@@ -216,7 +194,9 @@ export default function BooksPage() {
         />
 
         <DataTable
-          data={books.filter((book) => !filterGenre || book.genre === filterGenre)}
+          data={books.filter(
+            (book) => !filterGenre || book.genre === filterGenre
+          )}
           columns={[
             {
               header: "Title",
@@ -228,7 +208,7 @@ export default function BooksPage() {
           ]}
           actions={(book) => (
             <>
-              <button 
+              <button
                 onClick={(e) => {
                   e.stopPropagation();
                   handleEdit(e, book);
@@ -238,7 +218,7 @@ export default function BooksPage() {
                 Edit
               </button>
 
-              <button 
+              <button
                 onClick={(e) => {
                   e.stopPropagation();
                   setConfirmDeleteId(book.id);
