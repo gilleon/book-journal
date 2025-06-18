@@ -1,11 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import LogoutButton from './LogoutButton';
 import ThemeToggle from './ThemeToggle';
+import Logo from './Logo';
 
 export default function MobileNav() {
   const [isOpen, setIsOpen] = useState(false);
@@ -21,27 +21,28 @@ export default function MobileNav() {
     { href: '/about', label: 'About' },
   ];
 
+  const isActive = (href: string) => {
+    if (href === '/') {
+      return pathname === '/';
+    }
+    return pathname.startsWith(href);
+  };
+
   return (
     <div className="lg:hidden">
       <header className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
-              <Image 
-                src="/images/logo.png" 
-                alt="Pleria Logo" 
-                width={118} 
-                height={32}
-                className="h-8 w-auto"
-              />
+              <Logo />
             </div>
 
             <div className="flex items-center space-x-2">
               <ThemeToggle />
               <button
                 onClick={toggleMenu}
-                className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500"
-                aria-expanded="false"
+                className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500 transition-colors"
+                aria-expanded={isOpen}
               >
                 <span className="sr-only">Open main menu</span>
                 {!isOpen ? (
@@ -65,16 +66,16 @@ export default function MobileNav() {
                 key={link.href}
                 href={link.href}
                 onClick={closeMenu}
-                className={`block px-3 py-2 rounded-md text-base font-medium transition-colors ${
-                  pathname === link.href
-                    ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-200'
+                className={`block px-3 py-2 rounded-md text-base font-medium transition-all duration-200 ${
+                  isActive(link.href)
+                    ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-200 border-l-4 border-blue-600 dark:border-blue-400 shadow-sm'
                     : 'text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-50 dark:hover:bg-gray-700'
                 }`}
               >
                 {link.label}
               </Link>
             ))}
-            <div className="px-3 py-2">
+            <div className="px-3 py-2 mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
               <LogoutButton />
             </div>
           </div>
