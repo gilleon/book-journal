@@ -7,6 +7,7 @@ import BookDetailsModal from "../../components/BookDetailsModal";
 import InputField from "../../ui/InputField";
 import Button from "@/ui/Button";
 import { useBookData } from "../../hooks/useBookData";
+import LoadingSpinner from "@/ui/LoadingSpinner";
 
 export default function BooksPage() {
   const {
@@ -21,6 +22,7 @@ export default function BooksPage() {
     selectedBook,
     showDetailsModal,
     readerId,
+    loading,
     handleChange,
     setUpdateMethod,
     handleSubmit,
@@ -34,6 +36,10 @@ export default function BooksPage() {
     handleOpenDeleteModal,
     setFilterGenre,
   } = useBookData();
+
+  if (loading) {
+    return <LoadingSpinner message="Loading books..." />;
+  }
 
   return (
     <div className="plant-list-section mx-auto">

@@ -358,16 +358,27 @@ table {
 }
 
 th, td {
-  border: 1px solid #ddd;
+  /* border: 1px solid #ddd; */ 
   padding: 12px;
   text-align: left;
   font-size: 14px;
 }
 
 th {
-  background-color: var(--highlight-color);
+  background: linear-gradient(135deg, #238636, #2ea043);
   color: white;
-  font-weight: bold;
+  padding: 1rem;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.95rem;
+  letter-spacing: 0.5px;
+  border-bottom: 2px solid #1f6328;
+}
+
+tr {
+  opacity: 1;
+  transform: scale(1);
+  transition: 0.5s;
 }
 
 td img {
@@ -540,4 +551,12 @@ select:focus {
 
 .add-plant-button:hover {
   background-color: var(--button-bg-hover);
+}
+
+@media (prefers-color-scheme: dark) {
+  table,
+  th,
+  td {
+    border: none;
+  }
 }
