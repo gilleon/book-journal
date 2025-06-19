@@ -38,7 +38,7 @@ export default function BooksPage() {
   } = useBookData();
 
   if (loading) {
-    return <LoadingSpinner message="Loading books..." />;``
+    return <LoadingSpinner message="Loading books..." />;
   }
 
   return (
