@@ -218,7 +218,7 @@ export default function BookReactionsPage() {
 
       {/* Visualizations Section */}
       {reactions.length > 0 && (
-        <div className="mb-6">
+        <div className="mb-6 shadow-xl">
           <div className="grid grid-cols-1 lg:grid-cols-1 gap-6 mb-8">
             {/* Reading Status Distribution */}
             <div className="bg-white rounded-lg shadow-md p-6">
