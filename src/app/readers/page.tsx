@@ -5,6 +5,7 @@ import DataTable from "../../components/DataTable";
 import InputField from "../../ui/InputField";
 import Button from "../../ui/Button";
 import { useReaderData } from "../../hooks/useReaderData";
+import LoadingSpinner from "../../ui/LoadingSpinner";
 
 export default function ReadersPage() {
   const {
@@ -13,6 +14,7 @@ export default function ReadersPage() {
     isEditing,
     showModal,
     confirmDeleteId,
+    loading,
     handleChange,
     handleSubmit,
     handleEdit,
@@ -22,6 +24,10 @@ export default function ReadersPage() {
     handleOpenDeleteModal,
     handleCloseDeleteModal,
   } = useReaderData();
+
+  if (loading) {
+    return <LoadingSpinner message="Loading readers..." />;
+  }
 
   return (
     <div className="p-6 max-w-5xl mx-auto">
